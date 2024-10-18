@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "no-dupe-keys": "error",
+    "no-redeclare": "error"
+  }
+}
