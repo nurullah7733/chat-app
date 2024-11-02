@@ -3,13 +3,10 @@ const mongoose = require("mongoose");
 const conversationSchema = new mongoose.Schema(
   {
     participants: [
-      {
-        senderId: { type: mongoose.Schema.Types.ObjectId, required: true },
-        receiverId: { type: mongoose.Schema.Types.ObjectId, required: true },
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
     ],
     messages: [
-      { type: mongoose.Schema.Types.ObjectId, required: true, default: [] },
+      { type: mongoose.Schema.Types.ObjectId, ref: "messages", default: [] },
     ],
   },
   { timestamps: true, versionKey: false }

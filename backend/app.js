@@ -1,6 +1,9 @@
-const express = require("express");
+/* eslint-disable no-undef */
 const dotenv = require("dotenv");
 dotenv.config();
+const express = require("express");
+const path = require("path");
+
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -13,19 +16,10 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      const allowedOrigins = [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://laramintkw.com",
-        "https://lara-mint-ecommerce-app.vercel.app",
-      ];
-      const regex = /\.laramintkw\.com$/;
+      const allowedOrigins = ["http://localhost:3000"];
 
-      if (allowedOrigins.indexOf(origin) !== -1 || regex.test(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
+      const originIsAllowed = allowedOrigins.indexOf(origin) !== -1;
+      callback(null, originIsAllowed);
     },
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
@@ -47,7 +41,6 @@ let options = {
   user: process.env.DATABASE_USER,
   pass: process.env.DATABASE_PASS,
 };
-
 async function connectDB() {
   try {
     await mongoose.connect(URI, options);
@@ -61,9 +54,9 @@ connectDB();
 // Routing Implementation
 app.use("/api", mainRouter);
 
-// Undefined Route Handling
-app.use("*", (req, res) => {
-  res.status(404).json({ status: "fail", data: "Not Found" });
-});
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
+app.use("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+});
 module.exports = app;

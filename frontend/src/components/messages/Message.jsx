@@ -1,18 +1,40 @@
-const Message = () => {
+import moment from "moment";
+import { useAuthContext } from "../../context/authContext";
+import { useEffect, useRef } from "react";
+
+const Message = ({ message, receiverInfo }) => {
+  const messageRef = useRef(null);
+  const { authUser } = useAuthContext();
+
+  useEffect(() => {
+    messageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [message]);
+
+  const fromMe = authUser?._id === message?.senderId;
+  const shakeClass = message.shouldShake ? "shake" : "";
+
   return (
-    <div className={`chat chat-end`}>
-      <div className="chat-image avatar">
+    <div className={`chat mb-1 ${fromMe ? "chat-end" : "chat-start "}`}>
+      <div className="chat-image avatar ">
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS chat bubble component"
-            src="https://placeimg.com/192/192/people"
+            src={
+              fromMe ? authUser?.profilePicture : receiverInfo?.profilePicture
+            }
           />
         </div>
       </div>
-      <div className={`chat-bubble text-white  pb-2`}>hellow world</div>
+      <div
+        ref={messageRef}
+        className={`chat-bubble text-white  pb-2 ${
+          fromMe ? "bg-sky-500" : ""
+        }  ${shakeClass}`}
+      >
+        {message?.message}
+      </div>
       <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">
-        {" "}
-        {new Date().toLocaleTimeString()}
+        {moment(message?.createdAt).fromNow()}
       </div>
     </div>
   );

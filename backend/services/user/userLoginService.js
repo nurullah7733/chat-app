@@ -21,9 +21,11 @@ const userLoginService = async (Request, Response, DataModel) => {
           maxAge: 1000 * 60 * 60 * 24 * 30, // 1 month
           sameSite: "strict",
           httpOnly: true,
+          // eslint-disable-next-line no-undef
           secure: process.env.NODE_ENV !== "development",
         });
 
+        // eslint-disable-next-line no-unused-vars
         const { createdAt, updatedAt, password, ...filterData } = data[0];
         return {
           status: "success",

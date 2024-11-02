@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
 const messageModel = require("../../models/message/messageModel");
 const conversationModel = require("../../models/conversation/conversationModel");
+const { getReceiverSocketId, getIO } = require("../../socket/socket");
 
 exports.sendMessage = async (req, res) => {
+  const io = getIO();
   const senderId = req.headers.userId;
   const receiverId = req.params.id;
+
   try {
     let conversation = await conversationModel.findOne({
-      perticipants: { $all: [senderId, receiverId] },
+      participants: { $all: [senderId, receiverId] },
     });
     if (!conversation) {
       conversation = await conversationModel.create({
-        participants: [{ senderId, receiverId }],
+        participants: [senderId, receiverId],
         messages: [],
       });
     }
@@ -25,6 +28,12 @@ exports.sendMessage = async (req, res) => {
     await conversation.updateOne({
       $push: { messages: message._id },
     });
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
 
     res.status(201).json({ status: "success", data: message });
   } catch (error) {
@@ -42,21 +51,18 @@ exports.getMessages = async (req, res) => {
       mongoose.Types.ObjectId.isValid(senderId) &&
       mongoose.Types.ObjectId.isValid(receiverId)
     ) {
-      const validSenderId = new mongoose.Types.ObjectId(senderId);
-      const validReceiverId = new mongoose.Types.ObjectId(receiverId);
       const conversation = await conversationModel.aggregate([
         {
           $match: {
-            $and: [
-              {
-                "participants.senderId": validSenderId,
-              },
-              {
-                "participants.receiverId": validReceiverId,
-              },
-            ],
+            participants: {
+              $all: [
+                new mongoose.Types.ObjectId(senderId),
+                new mongoose.Types.ObjectId(receiverId),
+              ],
+            },
           },
         },
+
         {
           $lookup: {
             from: "messages",
@@ -65,7 +71,26 @@ exports.getMessages = async (req, res) => {
             as: "message",
           },
         },
+        {
+          $unwind: "$message",
+        },
+
+        { $sort: { "message.createdAt": 1 } },
+        { $group: { _id: "$_id", message: { $push: "$message" } } },
+
+        {
+          $lookup: {
+            from: "users",
+            let: { receiverId: new mongoose.Types.ObjectId(receiverId) },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$receiverId"] } } },
+              { $project: { password: 0 } },
+            ],
+            as: "receiverInfo",
+          },
+        },
       ]);
+
       res.status(200).json({ status: "success", data: conversation });
     } else {
       return res.status(400).json({ status: "fail", data: "Invalid Id" });

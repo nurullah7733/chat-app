@@ -1,20 +1,43 @@
 import { Link } from "react-router-dom";
-import Gander from "./gander";
+import Gender from "./Gender";
+import { useState } from "react";
+import useSignupHooks from "../../hooks/useSignupHooks";
 const Signup = () => {
+  const { signupRequest, loading } = useSignupHooks();
+  const [inputData, setInputData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    gender: "",
+  });
+
+  const handleGender = (gender) => {
+    setInputData({ ...inputData, gender });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signupRequest(inputData);
+  };
+
   return (
     <div className="flex flex-col justify-center items-center  bg-purple-100 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-0 border border-gray-100 min-w-96 py-7">
       <h1 className="text-3xl font-bold pb-3">
         Signup
         <span className="text-blue-500 "> ChatApp</span>
       </h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label className="label label-text  ">Full Name</label>
           <input
             className="input w-full h-10 input-bordered text-sm min-w-64"
             type="text"
             placeholder="Full Name"
-            required
+            value={inputData.fullName}
+            onChange={(e) =>
+              setInputData({ ...inputData, fullName: e.target.value })
+            }
           />
         </div>
         <div>
@@ -23,7 +46,10 @@ const Signup = () => {
             className="input w-full h-10 input-bordered text-sm min-w-64"
             type="email"
             placeholder="Email"
-            required
+            value={inputData.email}
+            onChange={(e) =>
+              setInputData({ ...inputData, email: e.target.value })
+            }
           />
         </div>
         <div>
@@ -32,7 +58,10 @@ const Signup = () => {
             className="input w-full h-10 input-bordered text-sm min-w-64"
             type="password"
             placeholder="Password"
-            required
+            value={inputData.password}
+            onChange={(e) =>
+              setInputData({ ...inputData, password: e.target.value })
+            }
           />
         </div>
         <div>
@@ -41,18 +70,28 @@ const Signup = () => {
             className="input w-full h-10 input-bordered text-sm min-w-64"
             type="password"
             placeholder="Confirm Password"
-            required
+            value={inputData.confirmPassword}
+            onChange={(e) =>
+              setInputData({ ...inputData, confirmPassword: e.target.value })
+            }
           />
         </div>
         <div className="mt-2">
-          <Gander />
+          <Gender handleGender={handleGender} gender={inputData.gender} />
         </div>
         <Link to="/login" className="link text-[12px] hover:text-blue-500 mb-2">
           Already registered? Login here
         </Link>
         <div>
-          <button className="btn btn-block mt-1 border-slate-700  border  h-8  !min-h-0  ">
-            Signup
+          <button
+            disabled={loading}
+            className="btn btn-block mt-1 border-slate-700  border  h-8  !min-h-0  "
+          >
+            {loading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              "Signup"
+            )}
           </button>
         </div>
       </form>
