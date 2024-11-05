@@ -17,12 +17,12 @@
   ],
   "routes": [
     {
-      "source": "/(auth|messages|users)/(.*)",
-      "destination": "backend/index.js"
+      "src": "/(auth|messages|users)/(.*)",
+      "dest": "backend/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "frontend/dist/$1"
+      "src": "/(.*)",
+      "dest": "frontend/dist/$1"
     }
   ]
 }
