@@ -6,17 +6,28 @@
       "use": "@vercel/node"
     },
     {
-      "src": "./frontend/dist",
-      "use": "@vercel/static"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/auth/(.*)", // /auth রাউটের জন্য
       "dest": "/backend/index.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/messages/(.*)", // /messages রাউটের জন্য
+      "dest": "/backend/index.js"
+    },
+    {
+      "src": "/users/(.*)", // /users রাউটের জন্য
+      "dest": "/backend/index.js"
+    },
+    {
+      "src": "/(.*)", // frontend রাউটের জন্য
       "dest": "/frontend/dist/$1"
     }
   ]
