@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { BsSend } from "react-icons/bs";
 import useSendMessageHooks from "../../hooks/useSendMessageHooks";
-import { useState } from "react";
 import useConversation from "../../zustand/useConversation";
 
 const MessageInput = () => {

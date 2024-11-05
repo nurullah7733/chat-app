@@ -4,10 +4,12 @@ const useConversation = create((set) => ({
   selectedConversation: null,
   setSelectedConversation: (conversation) =>
     set({ selectedConversation: conversation }),
+
   messages: [],
   initializeReceiverInfoAndMessages: (initialMessages) => {
     set({ messages: initialMessages });
   },
+
   setNewMessage: (newMessage) => {
     set((state) => {
       if (state.messages.length > 0) {
