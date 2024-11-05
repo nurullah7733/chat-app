@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vercel-build": "cd frontend && npm install && npm run build"
+    "vercel-build": "vite build"
   },
   "dependencies": {
     "code": "file:..",
