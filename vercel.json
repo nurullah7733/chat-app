@@ -15,10 +15,10 @@
     }
   ],
   "routes": [
-    {
-      "src": "/(auth|messages|users)/(.*)",
-      "dest": "/backend/index.js"
-    },
+    // {
+    //   "src": "/(auth|messages|users)/(.*)",
+    //   "dest": "/backend/index.js"
+    // },
     {
       "src": "/(.*)",
       "dest": "/frontend/build/$1"
