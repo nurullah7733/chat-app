@@ -6,8 +6,8 @@
   "scripts": {
     "server": "nodemon ./backend/index.js",
     "start": "node ./backend/index.js",
-    "build": "cd frontend && npm install && npm run build",
-    "vercel-build": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && npm install && npm run build --output build",
+    "vercel-build": "cd frontend && npm install && npm run build --output build"
   },
   "keywords": [],
   "author": "",
