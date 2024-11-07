@@ -4,6 +4,7 @@ const userLoginService = require("../../services/user/userLoginService");
 
 exports.register = async (req, res) => {
   let { fullName, email, password, confirmPassword, gender } = req.body;
+  const randomNumber = Math.floor(Math.random() * 99) + 1;
 
   if (!fullName || !email || !password || !confirmPassword || !gender) {
     return res
@@ -16,8 +17,8 @@ exports.register = async (req, res) => {
   } else if (password !== confirmPassword) {
     return res.status(400).json({ status: "fail", data: "password not match" });
   } else {
-    let maleProfilePicture = `https://avatar.iran.liara.run/public/boy/?username=${fullName}`;
-    let femaleProfilePicture = `https://avatar.iran.liara.run/public/girl/?username=${fullName}`;
+    let maleProfilePicture = `https://randomuser.me/api/portraits/men/${randomNumber}.jpg`;
+    let femaleProfilePicture = `https://randomuser.me/api/portraits/women/${randomNumber}.jpg`;
 
     if (gender == "male") {
       req.body["profilePicture"] = maleProfilePicture;

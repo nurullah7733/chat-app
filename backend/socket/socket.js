@@ -5,7 +5,8 @@ const userSocketMap = {};
 const initializeSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:3000"],
+      // eslint-disable-next-line no-undef
+      origin: [process.env.FRONTEND_URL],
       methods: ["GET", "POST"],
     },
   });
@@ -18,8 +19,27 @@ const initializeSocket = (server) => {
       userSocketMap[userId] = socket.id;
     }
 
+    // online users
     io.emit("onlineUsers", Object.keys(userSocketMap));
 
+    //  TypingStatus
+    socket.on("typing", (receiverId) => {
+      const receiverSocketId = getReceiverSocketId(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("typing", receiverId);
+        console.log("typing", receiverId);
+      }
+    });
+
+    socket.on("stopTyping", (receiverId) => {
+      const receiverSocketId = getReceiverSocketId(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("stopTyping", receiverId);
+        console.log("stopTyping", receiverId);
+      }
+    });
+
+    // disconnection
     socket.on("disconnect", () => {
       const disconnectedUserId = Object.keys(userSocketMap).find(
         (key) => userSocketMap[key] === socket.id
@@ -47,8 +67,18 @@ const getReceiverSocketId = (receiverId) => {
   return userSocketMap[receiverId];
 };
 
+// send message to receiverId
+const sendMessageToReceiver = (receiverId, message) => {
+  const receiverSocketId = getReceiverSocketId(receiverId);
+
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage", message);
+  }
+};
+
 module.exports = {
   initializeSocket,
   getReceiverSocketId,
   getIO,
+  sendMessageToReceiver,
 };

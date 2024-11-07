@@ -2,19 +2,46 @@ import { useState } from "react";
 import { BsSend } from "react-icons/bs";
 import useSendMessageHooks from "../../hooks/useSendMessageHooks";
 import useConversation from "../../zustand/useConversation";
+import { useSocketContext } from "../../context/socketContext";
+import useListenTypingStatus from "../../hooks/useListenTypingStatus";
+import useTypingStatus from "../../zustand/useTypingStatus";
 
 const MessageInput = () => {
+  useListenTypingStatus();
   const { selectedConversation } = useConversation();
+  const { setIsTyping } = useTypingStatus();
+
   const { sendMessageRequest, loading } = useSendMessageHooks();
+  const { socket } = useSocketContext();
   const [inputData, setInputData] = useState({
     message: "",
   });
 
+  const handleTyping = () => {
+    if (socket && selectedConversation?._id) {
+      socket.emit("typing", selectedConversation?._id);
+    }
+  };
+
+  const handleStopTyping = () => {
+    if (socket && selectedConversation?._id) {
+      socket.emit("stopTyping", selectedConversation?._id);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit(e);
+      e.target.blur(); // Remove focus from the input field
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!inputData.message) return;
-    sendMessageRequest(inputData, selectedConversation?._id);
+    await sendMessageRequest(inputData, selectedConversation?._id);
     setInputData({ message: "" });
+    setIsTyping(false);
   };
 
   return (
@@ -22,9 +49,12 @@ const MessageInput = () => {
       <div className="w-full relative">
         <input
           type="text"
-          className="border text-sm rounded-lg block w-full p-2.5  bg-gray-700 border-gray-600 text-white"
-          placeholder="Send a message"
+          className="border text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white"
+          placeholder="Send a message...."
           value={inputData.message}
+          onFocus={handleTyping}
+          onBlur={handleStopTyping}
+          onKeyDown={handleKeyDown}
           onChange={(e) => {
             setInputData({ ...inputData, message: e.target.value });
           }}
@@ -44,4 +74,5 @@ const MessageInput = () => {
     </form>
   );
 };
+
 export default MessageInput;

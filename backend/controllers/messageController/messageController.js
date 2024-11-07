@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 const messageModel = require("../../models/message/messageModel");
 const conversationModel = require("../../models/conversation/conversationModel");
-const { getReceiverSocketId, getIO } = require("../../socket/socket");
+const { sendMessageToReceiver } = require("../../socket/socket");
 
 exports.sendMessage = async (req, res) => {
-  const io = getIO();
   const senderId = req.headers.userId;
   const receiverId = req.params.id;
 
@@ -29,11 +28,7 @@ exports.sendMessage = async (req, res) => {
       $push: { messages: message._id },
     });
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
-
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", message);
-    }
+    sendMessageToReceiver(receiverId, message);
 
     res.status(201).json({ status: "success", data: message });
   } catch (error) {
