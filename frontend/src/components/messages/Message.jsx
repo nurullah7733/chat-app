@@ -25,6 +25,7 @@ const Message = ({ message, receiverInfo }) => {
           />
         </div>
       </div>
+
       <div
         ref={messageRef}
         className={`chat-bubble text-white  pb-2 ${
@@ -34,8 +35,13 @@ const Message = ({ message, receiverInfo }) => {
         {message?.message}
       </div>
 
-      <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">
-        {moment(message?.createdAt).fromNow()}
+      <div className="chat-footer opacity-70 text-xs flex  gap-3 items-center">
+        <p>{moment(message?.createdAt).fromNow()}</p>
+        {fromMe && (
+          <p className="mr-5 text-green-600 font-extrabold">
+            {message?.seen ? "Seen" : "Delivered"}
+          </p>
+        )}
       </div>
     </div>
   );

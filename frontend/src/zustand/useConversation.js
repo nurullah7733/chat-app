@@ -37,6 +37,32 @@ const useConversation = create(
           "setNewMessage"
         );
       },
+
+      updateMessageSeenStatus: ({ senderId, receiverId }) => {
+        set(
+          (state) => {
+            if (state.messages.length > 0) {
+              const updatedConversation = {
+                ...state.messages[0],
+                message: state.messages[0].message.map((msg) => {
+                  if (
+                    msg.senderId === senderId &&
+                    msg.receiverId === receiverId &&
+                    !msg.seen
+                  ) {
+                    return { ...msg, seen: true };
+                  }
+                  return msg;
+                }),
+              };
+              return { messages: [updatedConversation] };
+            }
+            return state;
+          },
+          false,
+          "updateMessageSeenStatus"
+        );
+      },
     }),
     {
       name: "Conversation Store",

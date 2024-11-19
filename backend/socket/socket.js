@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const messageModel = require("../models/message/messageModel");
 let io;
 const userSocketMap = {};
 
@@ -39,6 +40,38 @@ const initializeSocket = (server) => {
       }
     });
 
+    // seen message
+    socket.on("messagesSeen", async ({ senderId, receiverId }) => {
+      console.log("messagesSeen", senderId, receiverId);
+      try {
+        // receiverId যে মেসেজ দেখছে (User B)
+        // senderId যে মেসেজ পাঠিয়েছে (User A)
+
+        // update seen status in Database
+        await messageModel.updateMany(
+          {
+            senderId: senderId,
+            receiverId: receiverId,
+            seen: false,
+          },
+          {
+            $set: { seen: true },
+          }
+        );
+
+        //  send seen status to sender
+        const senderSocketId = getReceiverSocketId(senderId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("messagesSeen", {
+            senderId,
+            receiverId,
+          });
+        }
+      } catch (error) {
+        console.log("Error marking messages as seen:", error);
+      }
+    });
+
     // disconnection
     socket.on("disconnect", () => {
       const disconnectedUserId = Object.keys(userSocketMap).find(
@@ -72,7 +105,7 @@ const sendMessageToReceiver = (receiverId, message) => {
   const receiverSocketId = getReceiverSocketId(receiverId);
 
   if (receiverSocketId) {
-    io.to(receiverSocketId).emit("newMessage", message);
+    io.to(receiverSocketId).emit("newMessage", { ...message, seen: false });
   }
 };
 
