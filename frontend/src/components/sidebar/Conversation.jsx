@@ -1,9 +1,11 @@
 import { useSocketContext } from "../../context/socketContext";
 import useConversation from "../../zustand/useConversation";
+import useIsMessageContainerOpen from "../../zustand/useMessageConteinerIsOpenForMobileView";
 
 const Conversation = ({ lastIndex, conversation }) => {
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { onlineUsers } = useSocketContext();
+  const { setIsMessageContainerOpen } = useIsMessageContainerOpen();
 
   const online = onlineUsers?.find((user) => user === conversation?._id);
 
@@ -13,7 +15,10 @@ const Conversation = ({ lastIndex, conversation }) => {
         className={`flex gap-2 items-center hover:bg-sky-500 rounded p-2 py-1 cursor-pointer ${
           selectedConversation?._id === conversation?._id ? "bg-sky-500" : ""
         }`}
-        onClick={() => setSelectedConversation(conversation)}
+        onClick={() => {
+          setSelectedConversation(conversation),
+            setIsMessageContainerOpen(true);
+        }}
       >
         <div className={`avatar ${online ? "online" : ""}`}>
           <div className="w-12 rounded-full">
