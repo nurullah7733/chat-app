@@ -11,7 +11,7 @@ const MessageContainer = () => {
   const { setIsMessageContainerOpen } = useIsMessageContainerOpen();
 
   return (
-    <div className="md:min-w-[450px] !w-full lg:h-[500px] h-[95vh] flex flex-col">
+    <div className="md:min-w-[450px] !w-full lg:h-[500px] h-[90vh] flex flex-col">
       {selectedConversation ? (
         <>
           {/* Header */}
