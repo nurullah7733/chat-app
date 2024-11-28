@@ -15,7 +15,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center  bg-purple-100 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-0 border border-gray-100 min-w-96 py-7">
+    <div className="flex flex-col justify-center items-center  bg-purple-100 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-0 border border-gray-100 lg:min-w-96 min-w-full py-7">
       <h1 className="text-3xl font-bold pb-3">
         Login
         <span className="text-blue-500 "> ChatApp</span>

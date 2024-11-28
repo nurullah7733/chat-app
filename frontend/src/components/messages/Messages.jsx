@@ -37,12 +37,14 @@ const Messages = () => {
 
   // seen status message listen update
   useEffect(() => {
-    socket.on("messagesSeen", ({ senderId, receiverId }) => {
+    const messageSeenHandler = ({ senderId, receiverId }) => {
       updateMessageSeenStatus({ senderId, receiverId });
-    });
+    };
+
+    socket.on("messagesSeen", messageSeenHandler);
 
     return () => {
-      socket.off("messagesSeen");
+      socket.off("messagesSeen", messageSeenHandler);
     };
   }, [socket, updateMessageSeenStatus]);
 

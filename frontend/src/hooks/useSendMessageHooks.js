@@ -16,7 +16,17 @@ const useSendMessageHooks = () => {
 
       const data = await res.json();
       if (data?.status === "success") {
-        setNewMessage(data?.data);
+        console.log(data.data, "data");
+        setNewMessage({
+          _id: data.data._id,
+          createdAt: data.data.createdAt,
+          updatedAt: data.data.updatedAt,
+          message: data.data.message,
+          senderId: data.data.senderId,
+          receiverId: data.data.receiverId,
+          seen: data.data.seen,
+          shouldShake: true,
+        });
         toast.success("Message sent successfully");
       }
 

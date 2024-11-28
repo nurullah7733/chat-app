@@ -22,6 +22,7 @@ const useConversation = create(
       },
 
       setNewMessage: (newMessage) => {
+        console.log("newMessage from store", newMessage);
         set(
           (state) => {
             if (state.messages.length > 0) {
