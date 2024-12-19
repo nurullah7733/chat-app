@@ -16,7 +16,6 @@ const useSendMessageHooks = () => {
 
       const data = await res.json();
       if (data?.status === "success") {
-        console.log(data.data, "data");
         setNewMessage({
           _id: data.data._id,
           createdAt: data.data.createdAt,

@@ -5,8 +5,10 @@ import Messages from "./Messages";
 import useConversation from "../../zustand/useConversation";
 import { useAuthContext } from "../../context/authContext";
 import useIsMessageContainerOpen from "../../zustand/useMessageConteinerIsOpenForMobileView";
+import useTypingStatus from "../../zustand/useTypingStatus";
 
 const MessageContainer = () => {
+  const { isTyping } = useTypingStatus();
   const { selectedConversation } = useConversation();
   const { setIsMessageContainerOpen } = useIsMessageContainerOpen();
 
@@ -15,17 +17,20 @@ const MessageContainer = () => {
       {selectedConversation ? (
         <>
           {/* Header */}
-          <div className="flex items-center gap-2 bg-slate-500 px-4 py-2 mb-2">
-            <p
-              onClick={() => setIsMessageContainerOpen(false)}
-              className="lg:hidden flex text-lg border rounded-full w-6 h-6 cursor-pointer items-center justify-center"
-            >
-              <IoArrowBack />
-            </p>
-            <span className="label-text">To:</span>{" "}
-            <span className="font-bold text-white">
-              {selectedConversation?.fullName}
-            </span>
+          <div className=" h-10 bg-slate-500 px-4 py-2 ">
+            <div className="flex items-center gap-2">
+              <p
+                onClick={() => setIsMessageContainerOpen(false)}
+                className="lg:hidden flex text-lg border rounded-full w-6 h-6 cursor-pointer items-center justify-center"
+              >
+                <IoArrowBack />
+              </p>
+              <span className="label-text ">To:</span>{" "}
+              <span className="font-bold text-white  ">
+                {selectedConversation?.fullName}
+              </span>
+              <p className="inline-block text-xs ">{isTyping && "Typing..."}</p>
+            </div>
           </div>
 
           <Messages />

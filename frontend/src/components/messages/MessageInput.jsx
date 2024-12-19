@@ -5,6 +5,7 @@ import useConversation from "../../zustand/useConversation";
 import { useSocketContext } from "../../context/socketContext";
 import useListenTypingStatus from "../../hooks/useListenTypingStatus";
 import useTypingStatus from "../../zustand/useTypingStatus";
+import { useAuthContext } from "../../context/authContext";
 
 const MessageInput = () => {
   useListenTypingStatus();
@@ -13,19 +14,20 @@ const MessageInput = () => {
 
   const { sendMessageRequest, loading } = useSendMessageHooks();
   const { socket } = useSocketContext();
+  const { authUser } = useAuthContext();
   const [inputData, setInputData] = useState({
     message: "",
   });
 
   const handleTyping = () => {
     if (socket && selectedConversation?._id) {
-      socket.emit("typing", selectedConversation?._id);
+      socket.emit("typing", authUser?._id, selectedConversation?._id);
     }
   };
 
   const handleStopTyping = () => {
     if (socket && selectedConversation?._id) {
-      socket.emit("stopTyping", selectedConversation?._id);
+      socket.emit("stopTyping", authUser?._id, selectedConversation?._id);
     }
   };
 

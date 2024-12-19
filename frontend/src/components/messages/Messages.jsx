@@ -18,7 +18,7 @@ const Messages = () => {
   const { updateMessageSeenStatus } = useConversation();
   useListenMessages();
 
-  // scroll to bottom
+  // // scroll to bottom
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [isTyping]);
@@ -41,10 +41,11 @@ const Messages = () => {
       updateMessageSeenStatus({ senderId, receiverId });
     };
 
-    socket.on("messagesSeen", messageSeenHandler);
+    socket?.on("messagesSeen", messageSeenHandler);
 
     return () => {
-      socket.off("messagesSeen", messageSeenHandler);
+      console.log("clean up messageSeenHandler");
+      socket?.off("messagesSeen", messageSeenHandler);
     };
   }, [socket, updateMessageSeenStatus]);
 

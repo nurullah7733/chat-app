@@ -24,19 +24,17 @@ const initializeSocket = (server) => {
     io.emit("onlineUsers", Object.keys(userSocketMap));
 
     //  TypingStatus
-    socket.on("typing", (receiverId) => {
+    socket.on("typing", (senderId, receiverId) => {
       const receiverSocketId = getReceiverSocketId(receiverId);
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit("typing", receiverId);
-        console.log("typing", receiverId);
+        io.to(receiverSocketId).emit("typing", senderId);
       }
     });
 
-    socket.on("stopTyping", (receiverId) => {
+    socket.on("stopTyping", (senderId, receiverId) => {
       const receiverSocketId = getReceiverSocketId(receiverId);
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit("stopTyping", receiverId);
-        console.log("stopTyping", receiverId);
+        io.to(receiverSocketId).emit("stopTyping", senderId);
       }
     });
 
@@ -53,7 +51,6 @@ const initializeSocket = (server) => {
       }
       socket.handledMessages.add(messageKey);
 
-      console.log("messagesSeen", senderId, receiverId);
       try {
         await messageModel.updateMany(
           { senderId, receiverId, seen: false },
